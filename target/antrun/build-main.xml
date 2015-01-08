@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main">
+  <echo message="download archive"/>
+  <get dest="C:\Develop\workspaces\enetz\bpmn-js\target/bpmn-js.zip" src="UPSTREAM_ZIP_URL"/>
+  <echo message="unzip archive"/>
+  <unzip dest="C:\Develop\workspaces\enetz\bpmn-js\target" src="C:\Develop\workspaces\enetz\bpmn-js\target/bpmn-js.zip"/>
+  <echo message="moving resources"/>
+  <move todir="C:\Develop\workspaces\enetz\bpmn-js\target\classes/META-INF/resources/webjars/bpmn-js/0.7.0-SNAPSHOT">
+    <fileset dir="C:\Develop\workspaces\enetz\bpmn-js\target/SOME_SUBDIR-0.7.0"/>
+  </move>
+</target>
+</project>
