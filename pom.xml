@@ -11,7 +11,7 @@
     <packaging>jar</packaging>
     <groupId>org.webjars</groupId>
     <artifactId>bpmn-js</artifactId>
-  	<version>0.7.0-0</version>
+  	<version>0.7.0</version>
     <name>bpmn-js</name>
     <description>WebJar for bpmn-js</description>
     <url>http://webjars.org</url>
@@ -19,7 +19,12 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <upstream.version>0.7.0</upstream.version>
-        <!--upstream.url>UPSTREAM_ZIP_URL</upstream.url-->
+        <upstream.baseurl.viewer>https://github.com/bpmn-io/bower-bpmn-js/raw/master</upstream.baseurl.viewer>
+        <upstream.baseurl.modeler>http://demo.bpmn.io/vendor/bpmn-js/bpmn.min.js</upstream.baseurl.modeler>
+        <upstream.diagram.js.css>diagram-js.css</upstream.diagram.js.css>
+        <upstream.diagramjs.css.url>https://github.com/bpmn-io/diagram-js/raw/master/assets/${upstream.diagram.js.css}</upstream.diagramjs.css.url>
+        <upstream.url>https://github.com/bpmn-io/bpmn-js/archive/v${project.version}.zip</upstream.url>
+        <asset.path>assets/bpmn-font</asset.path>
         <destDir>${project.build.outputDirectory}/META-INF/resources/webjars/${project.artifactId}/${project.version}</destDir>       
     </properties>
 
@@ -74,29 +79,47 @@
     
     <build>
         <plugins>
-<!--             <plugin> -->
-<!--                 <groupId>org.apache.maven.plugins</groupId> -->
-<!--                 <artifactId>maven-antrun-plugin</artifactId> -->
-<!--                 <version>1.7</version> -->
-<!--                 <executions> -->
-<!--                     <execution> -->
-<!--                         <phase>process-resources</phase> -->
-<!--                         <goals><goal>run</goal></goals> -->
-<!--                         <configuration> -->
-<!--                             <target> -->
-<!--                                 <echo message="download archive" /> -->
-<!--                                 <get src="${upstream.url}" dest="${project.build.directory}/${project.artifactId}.zip" /> -->
-<!--                                 <echo message="unzip archive" /> -->
-<!--                                 <unzip src="${project.build.directory}/${project.artifactId}.zip" dest="${project.build.directory}" /> -->
-<!--                                 <echo message="moving resources" /> -->
-<!--                                 <move todir="${destDir}"> -->
-<!--                                     <fileset dir="${project.build.directory}/SOME_SUBDIR-${upstream.version}" /> -->
-<!--                                 </move> -->
-<!--                             </target> -->
-<!--                         </configuration> -->
-<!--                     </execution> -->
-<!--                 </executions> -->
-<!--             </plugin> -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <phase>process-resources</phase>
+                        <goals><goal>run</goal></goals>
+                        <configuration>
+                            <target>
+                                <echo message="download viewer" />
+                                <get src="${upstream.baseurl.viewer}/bpmn-viewer.js" dest="${project.build.directory}" />
+                                <get src="${upstream.baseurl.viewer}/bpmn-viewer.min.js" dest="${project.build.directory}" />
+                                <get src="${upstream.baseurl.viewer}/bpmn-viewer.min.js.map" dest="${project.build.directory}" />
+                                
+                                <echo message="download assets"/>
+                                <get src="${upstream.diagramjs.css.url}" dest="${project.build.directory}" />
+                                <get src="${upstream.url}" dest="${project.build.directory}" />
+                                
+                                <echo message="unzip archive" />
+                                <unzip src="${project.build.directory}/v${project.version}.zip" dest="${project.build.directory}" />
+                           
+                           		<echo message="download modeler"/>
+                           		<get src="${upstream.baseurl.modeler}" dest="${project.build.directory}/bpmn-modeler.min.js"/>
+                    			       		
+                                <echo message="moving resources" />
+                                <move todir="${destDir}">
+                                	<fileset dir="${project.build.directory}">
+      									<include name="**.js"/>
+      									<include name="**.map"/>
+      								</fileset>
+                                </move>
+                                <move todir="${destDir}">
+                                    <fileset dir="${project.build.directory}/${project.artifactId}-${upstream.version}/${asset.path}" />
+                                </move>
+                                <move todir="${destDir}/css" file="${project.build.directory}/${upstream.diagram.js.css}" />
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
